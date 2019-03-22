@@ -75,6 +75,11 @@ public final class Solos {
     public static final String GRAVATAR;
 
     /**
+     * Local file upload dir path.
+     */
+    public static final String UPLOAD_DIR_PATH;
+
+    /**
      * Mobile skin.
      */
     public static final String MOBILE_SKIN;
@@ -114,6 +119,11 @@ public final class Solos {
 
         FAVICON_API = solo.getString("faviconAPI");
         GRAVATAR = solo.getString("gravatar");
+        String dir = solo.getString("uploadDir");
+        if (StringUtils.isNotBlank(dir) && !StringUtils.endsWith(dir, "/")) {
+            dir += "/";
+        }
+        UPLOAD_DIR_PATH = dir;
         String mobileSkin = Option.DefaultPreference.DEFAULT_SKIN_DIR_NAME;
         try {
             mobileSkin = solo.getString("mobile.skin");
@@ -160,7 +170,7 @@ public final class Solos {
     private static long uploadTokenCheckTime;
     private static long uploadTokenTime;
     private static String uploadToken = "";
-    private static String uploadURL = "https://hacpai.com/upload/client";
+    private static String uploadURL = "./upload";
     private static String uploadMsg = "";
 
     /**
@@ -216,7 +226,7 @@ public final class Solos {
             final JSONObject data = result.optJSONObject(Common.DATA);
             uploadTokenTime = now;
             uploadToken = data.optString("uploadToken");
-            uploadURL = data.optString("uploadURL");
+//            uploadURL = data.optString("uploadURL");
             uploadMsg = "";
 
             return new JSONObject().
