@@ -191,64 +191,10 @@ public final class Solos {
      * @return upload token and URL, returns {@code null} if not found
      */
     public static JSONObject getUploadToken(final RequestContext context) {
-        try {
-            final JSONObject currentUser = getCurrentUser(context.getRequest(), context.getResponse());
-            if (null == currentUser) {
-                return null;
-            }
-
-            final String userName = currentUser.optString(User.USER_NAME);
-            final String userB3Key = currentUser.optString(UserExt.USER_B3_KEY);
-            if (StringUtils.isBlank(userB3Key)) {
-                return null;
-            }
-
-            final long now = System.currentTimeMillis();
-            if (3600000 >= now - uploadTokenTime) {
-                return new JSONObject().
-                        put(Common.UPLOAD_TOKEN, uploadToken).
-                        put(Common.UPLOAD_URL, uploadURL).
-                        put(Common.UPLOAD_MSG, uploadMsg);
-            }
-
-            if (15000 >= now - uploadTokenCheckTime) {
-                return new JSONObject().
-                        put(Common.UPLOAD_TOKEN, uploadToken).
-                        put(Common.UPLOAD_URL, uploadURL).
-                        put(Common.UPLOAD_MSG, uploadMsg);
-            }
-
-            final JSONObject requestJSON = new JSONObject().put(User.USER_NAME, userName).put(UserExt.USER_B3_KEY, userB3Key);
-            final HttpResponse res = HttpRequest.post("https://hacpai.com/apis/upload/token").trustAllCerts(true).
-                    body(requestJSON.toString()).connectionTimeout(3000).timeout(7000).header("User-Agent", Solos.USER_AGENT).send();
-            uploadTokenCheckTime = now;
-            if (HttpServletResponse.SC_OK != res.statusCode()) {
-                return null;
-            }
-            res.charset("UTF-8");
-            final JSONObject result = new JSONObject(res.bodyText());
-            if (0 != result.optInt(Keys.CODE)) {
-                uploadMsg = result.optString(Keys.MSG);
-                LOGGER.log(Level.ERROR, uploadMsg);
-
-                return null;
-            }
-
-            final JSONObject data = result.optJSONObject(Common.DATA);
-            uploadTokenTime = now;
-            uploadToken = data.optString("uploadToken");
-//            uploadURL = data.optString("uploadURL");
-            uploadMsg = "";
-
-            return new JSONObject().
-                    put(Common.UPLOAD_TOKEN, uploadToken).
-                    put(Common.UPLOAD_URL, uploadURL).
-                    put(Common.UPLOAD_MSG, uploadMsg);
-        } catch (final Exception e) {
-            LOGGER.log(Level.ERROR, "Gets upload token failed", e);
-
-            return null;
-        }
+        return new JSONObject().
+                put(Common.UPLOAD_TOKEN, uploadToken).
+                put(Common.UPLOAD_URL, uploadURL).
+                put(Common.UPLOAD_MSG, uploadMsg);
     }
 
     /**
