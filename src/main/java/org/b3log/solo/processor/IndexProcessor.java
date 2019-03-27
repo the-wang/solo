@@ -56,7 +56,8 @@ import java.util.Map;
  *
  * @author <a href="http://88250.b3log.org">Liang Ding</a>
  * @author <a href="https://hacpai.com/member/DASHU">DASHU</a>
- * @version 1.2.4.15, Feb 11, 2019
+ * @author <a href="https://vanessa.b3log.org">Vanessa</a>
+ * @version 1.2.4.16, Mar 19, 2019
  * @since 0.3.1
  */
 @RequestProcessor
@@ -130,6 +131,7 @@ public class IndexProcessor {
             dataModelService.fillIndexArticles(context, dataModel, currentPageNum, preference);
             dataModelService.fillCommon(context, dataModel, preference);
             dataModelService.fillFaviconURL(dataModel, preference);
+            dataModelService.fillUsite(dataModel);
 
             dataModel.put(Pagination.PAGINATION_CURRENT_PAGE_NUM, currentPageNum);
             final int previousPageNum = currentPageNum > 1 ? currentPageNum - 1 : 0;
@@ -166,7 +168,7 @@ public class IndexProcessor {
             referer = Latkes.getServePath();
         }
 
-        final AbstractFreeMarkerRenderer renderer = new SkinRenderer(context, "start.ftl");
+        final AbstractFreeMarkerRenderer renderer = new SkinRenderer(context, "common-template/start.ftl");
         final Map<String, Object> dataModel = renderer.getDataModel();
         final HttpServletRequest request = context.getRequest();
         final Map<String, String> langs = langPropsService.getAll(Locales.getLocale(request));
@@ -178,6 +180,7 @@ public class IndexProcessor {
         Keys.fillRuntime(dataModel);
         dataModelService.fillMinified(dataModel);
         dataModelService.fillFaviconURL(dataModel, optionQueryService.getPreference());
+        dataModelService.fillUsite(dataModel);
         Solos.addGoogleNoIndex(context);
     }
 
@@ -204,7 +207,7 @@ public class IndexProcessor {
     @RequestProcessing(value = "/kill-browser", method = HttpMethod.GET)
     public void showKillBrowser(final RequestContext context) {
         final HttpServletRequest request = context.getRequest();
-        final AbstractFreeMarkerRenderer renderer = new SkinRenderer(context, "kill-browser.ftl");
+        final AbstractFreeMarkerRenderer renderer = new SkinRenderer(context, "common-template/kill-browser.ftl");
         final Map<String, Object> dataModel = renderer.getDataModel();
         try {
             final Map<String, String> langs = langPropsService.getAll(Locales.getLocale(request));
@@ -212,6 +215,7 @@ public class IndexProcessor {
             final JSONObject preference = optionQueryService.getPreference();
             dataModelService.fillCommon(context, dataModel, preference);
             dataModelService.fillFaviconURL(dataModel, preference);
+            dataModelService.fillUsite(dataModel);
             Keys.fillServer(dataModel);
             Keys.fillRuntime(dataModel);
             dataModelService.fillMinified(dataModel);

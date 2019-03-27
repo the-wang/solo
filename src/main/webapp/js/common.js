@@ -20,7 +20,7 @@
  *
  * @author <a href="http://vanessa.b3log.org">Liyuan Li</a>
  * @author <a href="http://88250.b3log.org">Liang Ding</a>
- * @version 1.8.0.0, Mar 16, 2019
+ * @version 1.8.0.1, Mar 20, 2019
  */
 
 /**
@@ -30,28 +30,28 @@
 var Util = {
   isArticlePage: function (href) {
     var isArticle = true
-    if (href.indexOf(latkeConfig.servePath + '/tags/') > -1) {
+    if (href.indexOf(Label.servePath + '/tags/') > -1) {
       isArticle = false
     }
-    if (href.indexOf(latkeConfig.servePath + '/tags.html') > -1) {
+    if (href.indexOf(Label.servePath + '/tags.html') > -1) {
       isArticle = false
     }
-    if (href.indexOf(latkeConfig.servePath + '/category/') > -1) {
+    if (href.indexOf(Label.servePath + '/category/') > -1) {
       isArticle = false
     }
-    if (href.indexOf(latkeConfig.servePath + '/archives.html') > -1) {
+    if (href.indexOf(Label.servePath + '/archives.html') > -1) {
       isArticle = false
     }
-    if (href.indexOf(latkeConfig.servePath + '/archives/') > -1) {
+    if (href.indexOf(Label.servePath + '/archives/') > -1) {
       isArticle = false
     }
-    if (href.indexOf(latkeConfig.servePath + '/links.html') > -1) {
+    if (href.indexOf(Label.servePath + '/links.html') > -1) {
       isArticle = false
     }
-    if (href === latkeConfig.servePath) {
+    if (href === Label.servePath) {
       isArticle = false
     }
-    if (/^[0-9]*$/.test(href.replace(latkeConfig.servePath + '/', ''))) {
+    if (/^[0-9]*$/.test(href.replace(Label.servePath + '/', ''))) {
       isArticle = false
     }
     return isArticle
@@ -70,11 +70,11 @@ var Util = {
         storage: true,
         titleSuffix: '',
         filter: function (href) {
-          if (href === latkeConfig.servePath + '/rss.xml' ||
-            href.indexOf(latkeConfig.servePath + '/admin-index.do') > -1) {
+          if (href === Label.servePath + '/rss.xml' ||
+            href.indexOf(Label.servePath + '/admin-index.do') > -1) {
             return true
           }
-          if (href.indexOf(latkeConfig.servePath) > -1) {
+          if (href.indexOf(Label.servePath) > -1) {
             return false
           }
           return true
@@ -100,9 +100,17 @@ var Util = {
    */
   previewImg: function () {
     $('body').on('click', '.vditor-reset img', function () {
+      if ($(this).hasClass('prevent')) {
+        return
+      }
       window.open(this.src)
     })
   },
+  /**
+   * 异步添加 css
+   * @param url css 文件访问地址
+   * @param id css 文件标示
+   */
   addStyle: function (url, id) {
     if (!document.getElementById(id)) {
       var styleElement = document.createElement('link')
@@ -113,10 +121,32 @@ var Util = {
       document.getElementsByTagName('head')[0].appendChild(styleElement)
     }
   },
+  /**
+   * 异步添加 js
+   * @param url js 文件访问地址
+   * @param id js 文件标示
+   */
+  addScript: function (url, id) {
+    if (!document.getElementById(id)) {
+      var xhrObj = new XMLHttpRequest()
+      xhrObj.open('GET', url, false)
+      xhrObj.setRequestHeader('Accept',
+        'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01')
+      xhrObj.send('')
+      var scriptElement = document.createElement('script')
+      scriptElement.id = id
+      scriptElement.type = 'text/javascript'
+      scriptElement.text = xhrObj.responseText
+      document.getElementsByTagName('head')[0].appendChild(scriptElement)
+    }
+  },
   /*
   * @description 解析语法高亮
   */
   parseLanguage: function () {
+    if ($('.vditor-reset pre > code').length === 0) {
+      return
+    }
     Util.addStyle('https://cdn.jsdelivr.net/npm/highlight.js@9.15.6/styles/' +
       Label.hljsStyle + '.min.css', 'vditorHljsStyle')
 
@@ -138,22 +168,19 @@ var Util = {
     }
   },
   /**
-   * 按需加载 MathJax 及图标
+   * 按需加载数学公式、代码复制、图标
    * @returns {undefined}
    */
   parseMarkdown: function () {
-    if (!window.Vditor) {
-      var xhrObj = new XMLHttpRequest()
-      xhrObj.open('GET', latkeConfig.staticServePath +
-        '/js/lib/vditor-1.1.10/index.min.js', false)
-      xhrObj.setRequestHeader('Accept',
-        'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01')
-      xhrObj.send('')
-      var scriptElement = document.createElement('script')
-      scriptElement.type = 'text/javascript'
-      scriptElement.text = xhrObj.responseText
-      document.getElementsByTagName('head')[0].appendChild(scriptElement)
+    var text = $('.vditor-reset').text()
+    if ($('.vditor-reset pre > code').length === 0 &&
+      !(text.split('$').length > 2 ||
+        (text.split('\\(').length > 1 && text.split('\\)').length > 1))) {
+      return
     }
+
+    Util.addScript(Label.staticServePath + '/js/lib/vditor-1.1.10/index.min.js',
+      'vditorScript')
 
     Vditor.mermaidRender(document.body)
     Vditor.mathRender(document.body)
@@ -171,7 +198,7 @@ var Util = {
           var killIEHTML = '<div style=\'display: block; height: 100%; width: 100%; position: fixed; background-color: rgb(0, 0, 0); opacity: 0.6;filter: alpha(opacity=60); top: 0px;z-index:110\'></div>'
             + '<iframe style=\'left:' + left + 'px;z-index:120;top: ' + top1 +
             'px; position: fixed; border: 0px none; width: 781px; height: 680px;\' src=\'' +
-            latkeConfig.servePath + '/kill-browser\'></iframe>'
+            Label.servePath + '/kill-browser\'></iframe>'
           $('body').append(killIEHTML)
         } catch (e) {
           var left = 10,
@@ -179,7 +206,7 @@ var Util = {
           var killIEHTML = '<div style=\'display: block; height: 100%; width: 100%; position: fixed; background-color: rgb(0, 0, 0); opacity: 0.6;filter: alpha(opacity=60); top: 0px;z-index:110\'></div>'
             + '<iframe style=\'left:' + left + 'px;z-index:120;top: ' + top1 +
             'px; position: fixed; border: 0px none; width: 781px; height: 680px;\' src=\'' +
-            latkeConfig.servePath + '/kill-browser\'></iframe>'
+            Label.servePath + '/kill-browser\'></iframe>'
           document.body.innerHTML = document.body.innerHTML + killIEHTML
         }
       }
@@ -209,7 +236,7 @@ var Util = {
     str = commentSplited[0]
     for (var j = 1; j < commentSplited.length; j++) {
       var key = commentSplited[j].substr(0, 2)
-      str += '<img width=\'20\' src=\'' + latkeConfig.staticServePath +
+      str += '<img width=\'20\' src=\'' + Label.staticServePath +
         '/images/emotions/em' + key + '.png\' alt=\'' +
         Label['em' + key + 'Label'] + '\' title=\'' +
         Label['em' + key + 'Label'] + '\'/> ' + commentSplited[j].substr(3)
@@ -269,6 +296,16 @@ var Util = {
     Util.parseLanguage()
     Util.initSW()
     Util.previewImg()
+    Util.initDebugInfo()
+  },
+  /**
+   * 调试区域文案
+   */
+  initDebugInfo: function () {
+    console.log(
+      '%cSolo%c\n  🎸一款小而美的博客系统，专为程序员设计。' + Label.version + ' © ' +
+      (new Date).getFullYear(),
+      'font-size:96px;color:#3b3e43', 'font-size:12px;color:rgba(0,0,0,0.38);')
   },
   /**
    * @description 注册 Service Work

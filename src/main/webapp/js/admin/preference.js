@@ -20,7 +20,7 @@
  *
  * @author <a href="http://vanessa.b3log.org">Liyuan Li</a>
  * @author <a href="http://88250.b3log.org">Liang Ding</a>
- * @version 1.3.0.1, Mar 17, 2019
+ * @version 1.3.0.2, Mar 19, 2019
  */
 
 /* preference 相关操作 */
@@ -33,7 +33,7 @@ admin.preference = {
     $('#tabPreference').tabs()
 
     $.ajax({
-      url: latkeConfig.servePath + '/console/preference/',
+      url: Label.servePath + '/console/preference/',
       type: 'GET',
       cache: false,
       success: function (result, textStatus) {
@@ -72,14 +72,12 @@ admin.preference = {
           val(preference.randomArticlesDisplayCount)
         $('#customVars').val(preference.customVars)
 
-        'true' === preference.enableArticleUpdateHint ? $(
-          '#enableArticleUpdateHint').attr('checked', 'checked') : $(
-          '#enableArticleUpdateHint').removeAttr('checked')
-        'true' === preference.allowVisitDraftViaPermalink ? $(
-          '#allowVisitDraftViaPermalink').attr('checked', 'checked') : $(
-          'allowVisitDraftViaPermalink').removeAttr('checked')
-        'true' === preference.commentable ? $('#commentable').
-          attr('checked', 'checked') : $('commentable').removeAttr('checked')
+        'true' === preference.enableArticleUpdateHint ? $('#enableArticleUpdateHint').attr('checked', 'checked') : $('#enableArticleUpdateHint').removeAttr('checked')
+        'true' === preference.allowVisitDraftViaPermalink ? $('#allowVisitDraftViaPermalink').attr('checked', 'checked') : $('allowVisitDraftViaPermalink').removeAttr('checked')
+        'true' === preference.commentable ? $('#commentable').attr('checked', 'checked') : $('commentable').removeAttr('checked')
+        'true' === preference.syncGitHub ? $('#syncGitHub').attr('checked', 'checked') : $('syncGitHub').removeAttr('checked')
+
+        syncGitHub
 
         admin.preference.locale = preference.localeString
 
@@ -97,10 +95,10 @@ admin.preference = {
             '"><div class="ft__center">' +
             skins[i].skinName
             + '</div><img class="skinPreview" src="'
-            + latkeConfig.staticServePath + '/skins/' + skins[i].skinDirName
+            + Label.staticServePath + '/skins/' + skins[i].skinDirName
             + '/preview.png"/><div><button class="update small" data-name="' +
             skins[i].skinDirName + '">' + Label.enableLabel +
-            '</button><button class="small" onclick="window.open(\'' + latkeConfig.servePath +
+            '</button><button class="small" onclick="window.open(\'' + Label.servePath +
             '?skin=' + skins[i].skinName + '\')">'
             + Label.previewLabel + '</button></div></div>'
         }
@@ -256,13 +254,14 @@ admin.preference = {
         'feedOutputMode': $('#feedOutputMode').val(),
         'feedOutputCnt': $('#feedOutputCnt').val(),
         'faviconURL': $('#faviconURL').val(),
+        'syncGitHub': $('#syncGitHub').prop('checked'),
         'commentable': $('#commentable').prop('checked'),
         'customVars': $('#customVars').val(),
       },
     }
 
     $.ajax({
-      url: latkeConfig.servePath + '/console/preference/',
+      url: Label.servePath + '/console/preference/',
       type: 'PUT',
       cache: false,
       data: JSON.stringify(requestJSONObject),

@@ -17,26 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -->
-<#include "macro-common-page.ftl">
-
-<@commonPage "Kill IE!">
-<div class="kill">
-    ${killBrowserLabel}
-    <div class="kill__btns">
-        <button onclick="closeIframe();">${closeLabel}</button> &nbsp;
-        <button onclick="closeIframeForever();">${closeForeverLabel}</button>
-    </div>
-    <img src='${staticServePath}/images/kill-browser.png' title='Kill IE6' class="kill__img" alt='Kill IE6'/>
-</div>
-<script>
-    var closeIframe = function () {
-        window.parent.$('iframe').prev().remove()
-        window.parent.$('iframe').remove()
-    }
-
-    var closeIframeForever = function () {
-        window.parent.Cookie.createCookie('showKill', true, 365)
-        closeIframe()
-    }
-</script>
-</@commonPage>
+<ul class="article__toc">
+    <#list article.articleToC as item>
+        <li class="${item.className}">
+            <a href="#${item.id}">${item.text}</a>
+        </li>
+    </#list>
+</ul>

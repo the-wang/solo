@@ -26,7 +26,7 @@ import org.json.JSONObject;
  *
  * @author <a href="http://88250.b3log.org">Liang Ding</a>
  * @author <a href="https://github.com/hzchendou">hzchendou</a>
- * @version 1.5.0.5, Mar 17, 2019
+ * @version 1.5.0.6, Mar 20, 2019
  * @since 0.6.0
  */
 public final class Option {
@@ -52,6 +52,11 @@ public final class Option {
     public static final String OPTION_CATEGORY = "optionCategory";
 
     // oId constants
+    /**
+     * Key of enable syn GitHub. 博文定时同步 GitHub 仓库 https://github.com/b3log/solo/issues/12676
+     */
+    public static final String ID_C_SYNC_GITHUB = "syncGitHub";
+
     /**
      * Key of favicon URL.
      */
@@ -237,6 +242,11 @@ public final class Option {
      */
     public static final String ID_C_GITHUB_REPOS = "githubRepos";
 
+    /**
+     * Key of USite.
+     */
+    public static final String ID_C_USITE = "usite";
+
     // Category constants
     /**
      * Category - Preference.
@@ -252,6 +262,11 @@ public final class Option {
      * Category - GitHub.
      */
     public static final String CATEGORY_C_GITHUB = "github";
+
+    /**
+     * Category - HacPai.
+     */
+    public static final String CATEGORY_C_HACPAI = "hacpai";
 
     //// Transient ////
     /**
@@ -274,10 +289,15 @@ public final class Option {
      * Default preference.
      *
      * @author <a href="http://88250.b3log.org">Liang Ding</a>
-     * @version 2.2.0.2, Mar 17, 2019
+     * @version 2.2.0.3, Mar 19, 2019
      * @since 0.3.1
      */
     public static final class DefaultPreference {
+
+        /**
+         * Default enable sync GitHub.
+         */
+        public static final String DEFAULT_SYNC_GITHUB = "false";
 
         /**
          * Default favicon URL.

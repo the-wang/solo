@@ -59,18 +59,19 @@ $.extend(Page.prototype, {
   toggleEditor: function (commentId, name) {
     var $editor = $('#soloEditor')
     if ($editor.length === 0) {
-      location.href = latkeConfig.servePath + '/start'
+      location.href = Label.servePath + '/start'
       return
     }
 
-    if (typeof vditor === 'undefined') {
+    if (!$('#soloEditorComment').hasClass('vditor')) {
       var that = this
+      Util.addScript(Label.staticServePath + '/js/lib/vditor-1.1.10/index.min.js', 'vditorScript')
       window.vditor = new Vditor('soloEditorComment', {
         placeholder: that.tips.commentContentCannotEmptyLabel,
         height: 180,
         tab: '\t',
         hint: {
-          emojiPath: latkeConfig.staticServePath +
+          emojiPath: Label.staticServePath +
           '/js/lib/emojify.js-1.1.0/images/basic',
         },
         esc: function () {
@@ -82,7 +83,7 @@ $.extend(Page.prototype, {
         preview: {
           delay: 500,
           show: false,
-          url: latkeConfig.servePath + '/console/markdown/2html',
+          url: Label.servePath + '/console/markdown/2html',
           hljs: {
             enable: true,
             style: Label.hljsStyle,
@@ -157,7 +158,7 @@ $.extend(Page.prototype, {
     var randomArticles1Label = this.tips.randomArticles1Label
     // getRandomArticles
     $.ajax({
-      url: latkeConfig.servePath + '/articles/random',
+      url: Label.servePath + '/articles/random',
       type: 'POST',
       success: function (result, textStatus) {
         var randomArticles = result.randomArticles
@@ -171,7 +172,7 @@ $.extend(Page.prototype, {
           var article = randomArticles[i]
           var title = article.articleTitle
           var randomArticleLiHtml = '<li>' + '<a rel=\'nofollow\' title=\'' +
-            title + '\' href=\'' + latkeConfig.servePath +
+            title + '\' href=\'' + Label.servePath +
             article.articlePermalink + '\'>' + title + '</a></li>'
           listHtml += randomArticleLiHtml
         }
@@ -191,7 +192,7 @@ $.extend(Page.prototype, {
    */
   loadRelevantArticles: function (id, headTitle) {
     $.ajax({
-      url: latkeConfig.servePath + '/article/id/' + id + '/relevant/articles',
+      url: Label.servePath + '/article/id/' + id + '/relevant/articles',
       type: 'GET',
       success: function (data, textStatus) {
         var articles = data.relevantArticles
@@ -205,7 +206,7 @@ $.extend(Page.prototype, {
           var title = article.articleTitle
           var articleLiHtml = '<li>'
             + '<a rel=\'nofollow\' title=\'' + title + '\' href=\'' +
-            latkeConfig.servePath + article.articlePermalink + '\'>'
+            Label.servePath + article.articlePermalink + '\'>'
             + title + '</a></li>'
           listHtml += articleLiHtml
         }
@@ -292,7 +293,7 @@ $.extend(Page.prototype, {
 
       $.ajax({
         type: 'POST',
-        url: latkeConfig.servePath + '/' + type + '/comments',
+        url: Label.servePath + '/' + type + '/comments',
         cache: false,
         contentType: 'application/json',
         data: JSON.stringify(requestJSONObject),
@@ -302,7 +303,6 @@ $.extend(Page.prototype, {
             $('#soloEditorError').html(result.msg)
             return
           }
-
           that.toggleEditor()
           vditor.setValue('')
           that.addCommentAjax(Util.replaceEmString(result.cmtTpl))

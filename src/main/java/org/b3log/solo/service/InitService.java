@@ -27,7 +27,6 @@ import org.b3log.latke.logging.Logger;
 import org.b3log.latke.model.Role;
 import org.b3log.latke.model.User;
 import org.b3log.latke.plugin.PluginManager;
-import org.b3log.latke.repository.Query;
 import org.b3log.latke.repository.RepositoryException;
 import org.b3log.latke.repository.Transaction;
 import org.b3log.latke.repository.jdbc.util.Connections;
@@ -56,7 +55,7 @@ import java.util.Set;
  * Solo initialization service.
  *
  * @author <a href="http://88250.b3log.org">Liang Ding</a>
- * @version 1.5.2.30, Mar 2, 2019
+ * @version 1.5.2.31, Mar 23, 2019
  * @since 0.4.0
  */
 @Service
@@ -160,7 +159,7 @@ public class InitService {
         }
 
         try {
-            inited = !optionRepository.getList(new Query()).isEmpty();
+            inited = null != optionRepository.get(Option.ID_C_VERSION);
             if (!inited && !printedInitMsg) {
                 LOGGER.log(Level.WARN, "Solo has not been initialized, please open your browser to init Solo");
                 printedInitMsg = true;
@@ -179,7 +178,7 @@ public class InitService {
      * Initializes database tables.
      */
     public void initTables() {
-        try (final Connection chk = Connections.getConnection()){
+        try (final Connection chk = Connections.getConnection()) {
             final String tablePrefix = Latkes.getLocalProperty("jdbc.tablePrefix") + "_";
             final boolean userTableExist = JdbcRepositories.existTable(tablePrefix + User.USER);
             final boolean optionTableExist = JdbcRepositories.existTable(tablePrefix + Option.OPTION);
@@ -187,7 +186,7 @@ public class InitService {
                 return;
             }
         } catch (final Exception e) {
-            LOGGER.log(Level.ERROR, "Check tables failed, please make sure database existed and connection URL [jdbc.URL] in local.props is correct [msg=" + e.getMessage() + "]");
+            LOGGER.log(Level.ERROR, "Check tables failed, please make sure database existed and database configuration [jdbc.*] in local.props is correct [msg=" + e.getMessage() + "]");
 
             System.exit(-1);
         }
@@ -474,6 +473,12 @@ public class InitService {
      */
     private void initPreference(final JSONObject requestJSONObject) throws Exception {
         LOGGER.debug("Initializing preference....");
+
+        final JSONObject syncGitHubOpt = new JSONObject();
+        syncGitHubOpt.put(Keys.OBJECT_ID, Option.ID_C_SYNC_GITHUB);
+        syncGitHubOpt.put(Option.OPTION_CATEGORY, Option.CATEGORY_C_PREFERENCE);
+        syncGitHubOpt.put(Option.OPTION_VALUE, DefaultPreference.DEFAULT_SYNC_GITHUB);
+        optionRepository.add(syncGitHubOpt);
 
         final JSONObject faviconURLOpt = new JSONObject();
         faviconURLOpt.put(Keys.OBJECT_ID, Option.ID_C_FAVICON_URL);

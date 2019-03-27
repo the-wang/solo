@@ -37,7 +37,7 @@ import java.io.File;
  * </ul>
  *
  * @author <a href="http://88250.b3log.org">Liang Ding</a>
- * @version 1.1.0.15, Dec 15, 2018
+ * @version 1.1.0.16, Mar 19, 2019
  * @since 1.2.0
  */
 public final class Starter {
@@ -99,7 +99,6 @@ public final class Starter {
         options.addOption(runtimeModeOpt);
 
         options.addOption("h", "help", false, "print help for the command");
-        options.addOption("no", "not_open", false, "not auto open in the browser");
 
         final HelpFormatter helpFormatter = new HelpFormatter();
         final CommandLineParser commandLineParser = new DefaultParser();
@@ -108,7 +107,7 @@ public final class Starter {
         final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
         final String cmdSyntax = isWindows ? "java -cp \"WEB-INF/lib/*;WEB-INF/classes\" org.b3log.solo.Starter"
                 : "java -cp \"WEB-INF/lib/*:WEB-INF/classes\" org.b3log.solo.Starter";
-        final String header = "\nSolo 是一款小而美的 Java 博客系统。\n\n";
+        final String header = "\nSolo 是一款小而美的博客系统，专为程序员设计。\n\n";
         final String footer = "\n提需求或报告缺陷请到项目网站: https://github.com/b3log/solo\n\n";
         try {
             commandLine = commandLineParser.parse(options, args);
@@ -129,7 +128,13 @@ public final class Starter {
             portArg = "8080";
         }
 
-        Latkes.init();
+        try {
+            Latkes.init();
+        } catch (final Exception e) {
+            logger.log(Level.ERROR, "Latke init failed, please configure latke.props or run with args, visit https://hacpai.com/article/1492881378588 for more details");
+
+            System.exit(-1);
+        }
 
         String serverScheme = commandLine.getOptionValue("server_scheme");
         if (null != serverScheme) {
@@ -181,19 +186,6 @@ public final class Starter {
 
             System.exit(-1);
         }
-
-//        serverScheme = Latkes.getServerScheme();
-//        serverHost = Latkes.getServerHost();
-//        serverPort = Latkes.getServerPort();
-//        final String contextPath = Latkes.getContextPath();
-//
-//        try {
-//            if (!commandLine.hasOption("no")) {
-//                Desktop.getDesktop().browse(new URI(serverScheme + "://" + serverHost + ":" + serverPort + contextPath));
-//            }
-//        } catch (final Throwable e) {
-//            // Ignored
-//        }
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {

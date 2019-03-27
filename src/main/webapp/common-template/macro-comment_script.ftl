@@ -37,16 +37,7 @@
     </div>
 </#if>
 <script type="text/javascript">
-    if (!window.Page) {
-        var xhrObj = new XMLHttpRequest()
-        xhrObj.open('GET', '${staticServePath}/js/page${miniPostfix}.js?${staticResourceVersion}', false)
-        xhrObj.setRequestHeader('Accept', 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01')
-        xhrObj.send('')
-        var scriptElement = document.createElement('script')
-        scriptElement.type = 'text/javascript'
-        scriptElement.text = xhrObj.responseText
-        document.getElementsByTagName('head')[0].appendChild(scriptElement)
-    }
+    Util.addScript('${staticServePath}/js/page${miniPostfix}.js?${staticResourceVersion}', 'soloPageScript')
     var page = new Page({
         "commentContentCannotEmptyLabel": "${commentContentCannotEmptyLabel}",
         "oId": "${oId}",
@@ -54,11 +45,11 @@
         "randomArticles1Label": "${randomArticles1Label}",
         "externalRelevantArticles1Label": "${externalRelevantArticles1Label}"
     });
-    (function () {
+    $(document).ready(function () {
         page.load();
         // emotions
         page.replaceCommentsEm("#comments .vditor-reset");
         <#nested>
-    })();
+    });
 </script>
 </#macro>
