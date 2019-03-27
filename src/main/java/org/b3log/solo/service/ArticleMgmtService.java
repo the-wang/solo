@@ -300,7 +300,7 @@ public class ArticleMgmtService {
             article.put(ARTICLE_ABSTRACT_TEXT, articleAbstractText);
 
             // Update
-            final boolean postToCommunity = article.optBoolean(Common.POST_TO_COMMUNITY, true);
+            final boolean postToCommunity = article.optBoolean(Common.POST_TO_COMMUNITY, false);
             article.remove(Common.POST_TO_COMMUNITY); // Do not persist this property
             articleRepository.update(articleId, article);
             article.put(Common.POST_TO_COMMUNITY, postToCommunity); // Restores the property
@@ -425,7 +425,7 @@ public class ArticleMgmtService {
             final String articleAbstractText = Article.getAbstractText(article);
             article.put(ARTICLE_ABSTRACT_TEXT, articleAbstractText);
 
-            final boolean postToCommunity = article.optBoolean(Common.POST_TO_COMMUNITY, true);
+            final boolean postToCommunity = article.optBoolean(Common.POST_TO_COMMUNITY, false);
             article.remove(Common.POST_TO_COMMUNITY); // Do not persist this property
 
             articleRepository.add(article);
